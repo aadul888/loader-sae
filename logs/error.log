@@ -9134,3 +9134,84 @@ Date:          Tue, 01 Sep 2026 07:33:34 GMT
 [2026-09-01 14:07:07] ERROR - All attempts failed for http://localhost:5774/WebService/getSekolah?token=0aprRpGUmIiyQ6I&npsn=20252031. Tried: http://localhost:5774/WebService/getSekolah, http://localhost:5774/WebService/getSekolah?npsn=20252031, http://localhost:5774/WebService/getSekolah?token=0aprRpGUmIiyQ6I
 [2026-09-01 14:07:10] ERROR - Invalid JSON from Dapodik: Syntax error - snippet: Tidak terhubung dengan database. #2<br>Versi aplikasi saat ini 2027.b.
 [2026-09-01 14:07:11] ERROR - All attempts failed for http://localhost:5774/WebService/getSekolah?token=0aprRpGUmIiyQ6I&npsn=20252031. Tried: http://localhost:5774/WebService/getSekolah, http://localhost:5774/WebService/getSekolah?npsn=20252031, http://localhost:5774/WebService/getSekolah?token=0aprRpGUmIiyQ6I
+[2026-09-01 14:08:03] ERROR - dapodik_get_raw error for http://localhost:5774/WebService/getSekolah?token=0aprRpGUmIiyQ6I&npsn=20252031: Dapodik request failed after 2 retries: Failed to connect to localhost port 5774 after 2242 ms: Could not connect to server
+[2026-09-01 14:08:15] ERROR - dapodik_get_raw error for http://localhost:5774/WebService/getSekolah?token=0aprRpGUmIiyQ6I&npsn=20252031: Dapodik request failed after 2 retries: Failed to connect to localhost port 5774 after 2248 ms: Could not connect to server
+[2026-09-01 14:08:21] ERROR - dapodik_get_raw error for http://localhost:5774/WebService/getSekolah?token=0aprRpGUmIiyQ6I&npsn=20252031: Dapodik request failed after 2 retries: Failed to connect to localhost port 5774 after 2249 ms: Could not connect to server
+[2026-09-01 14:08:56] ERROR - dapodik_get_raw error for http://localhost:5774/WebService/getSekolah?token=0aprRpGUmIiyQ6I&npsn=20252031: Dapodik request failed after 2 retries: Failed to connect to localhost port 5774 after 2244 ms: Could not connect to server
+[2026-09-01 14:09:07] ERROR - dapodik_get_raw error for http://localhost:5774/WebService/getSekolah?token=0aprRpGUmIiyQ6I&npsn=20252031: Dapodik request failed after 2 retries: Failed to connect to localhost port 5774 after 2258 ms: Could not connect to server
+[2026-09-01 14:09:48] ERROR - dapodik_get_raw error for http://localhost:5774/WebService/getSekolah?token=0aprRpGUmIiyQ6I&npsn=20252031: Dapodik request failed after 2 retries: Failed to connect to localhost port 5774 after 2222 ms: Could not connect to server
+[2026-09-01 14:09:59] ERROR - dapodik_get_raw error for http://localhost:5774/WebService/getSekolah?token=0aprRpGUmIiyQ6I&npsn=20252031: Dapodik request failed after 2 retries: Failed to connect to localhost port 5774 after 2219 ms: Could not connect to server
+[2026-09-01 14:10:03] ERROR - Invalid JSON from Dapodik: Syntax error - snippet: Tidak terhubung dengan database. #2<br>Versi aplikasi saat ini 2027.
+[2026-09-01 14:10:04] ERROR - All attempts failed for http://localhost:5774/WebService/getSekolah?token=0aprRpGUmIiyQ6I&npsn=20252031. Tried: http://localhost:5774/WebService/getSekolah, http://localhost:5774/WebService/getSekolah?npsn=20252031, http://localhost:5774/WebService/getSekolah?token=0aprRpGUmIiyQ6I
+[2026-09-01 14:10:36] ERROR - Invalid JSON from Dapodik: Syntax error - snippet: HTTP/1.0 403 Forbidden
+Cache-Control: no-cache
+Date:          Tue, 01 Sep 2026 14:10:36 GMT
+
+{"success":false,"http_code":403,"status_code":"Forbidden","message":"Aplikasi tidak terdaftar pada Web Service Dapodik"}
+[2026-09-01 14:10:37] ERROR - All attempts failed for http://localhost:5774/WebService/getSekolah?token=0aprRpGUmIiyQ6I&npsn=20252031. Tried: http://localhost:5774/WebService/getSekolah, http://localhost:5774/WebService/getSekolah?npsn=20252031, http://localhost:5774/WebService/getSekolah?token=0aprRpGUmIiyQ6I
+[2026-09-01 14:10:40] ERROR - Invalid JSON from Dapodik: Syntax error - snippet: HTTP/1.0 403 Forbidden
+Cache-Control: no-cache
+Date:          Tue, 01 Sep 2026 14:10:40 GMT
+
+{"success":false,"http_code":403,"status_code":"Forbidden","message":"Aplikasi tidak terdaftar pada Web Service Dapodik"}
+[2026-09-01 14:10:40] ERROR - All attempts failed for http://localhost:5774/WebService/getSekolah?token=0aprRpGUmIiyQ6I&npsn=20252031. Tried: http://localhost:5774/WebService/getSekolah, http://localhost:5774/WebService/getSekolah?npsn=20252031, http://localhost:5774/WebService/getSekolah?token=0aprRpGUmIiyQ6I
+[2026-09-01 14:11:12] ERROR - Invalid JSON from Dapodik: Syntax error - snippet: HTTP/1.0 403 Forbidden
+Cache-Control: no-cache
+Date:          Tue, 01 Sep 2026 14:11:12 GMT
+
+{"success":false,"http_code":403,"status_code":"Forbidden","message":"Aplikasi tidak terdaftar pada Web Service Dapodik"}
+[2026-09-01 14:11:12] ERROR - All attempts failed for http://localhost:5774/WebService/getSekolah?token=0aprRpGUmIiyQ6I&npsn=20252031. Tried: http://localhost:5774/WebService/getSekolah, http://localhost:5774/WebService/getSekolah?npsn=20252031, http://localhost:5774/WebService/getSekolah?token=0aprRpGUmIiyQ6I
+[2026-09-01 14:11:14] ERROR - Invalid JSON from Dapodik: Syntax error - snippet: HTTP/1.0 403 Forbidden
+Cache-Control: no-cache
+Date:          Tue, 01 Sep 2026 14:11:14 GMT
+
+{"success":false,"http_code":403,"status_code":"Forbidden","message":"Aplikasi tidak terdaftar pada Web Service Dapodik"}
+[2026-09-01 14:11:15] ERROR - All attempts failed for http://localhost:5774/WebService/getSekolah?token=0aprRpGUmIiyQ6I&npsn=20252031. Tried: http://localhost:5774/WebService/getSekolah, http://localhost:5774/WebService/getSekolah?npsn=20252031, http://localhost:5774/WebService/getSekolah?token=0aprRpGUmIiyQ6I
+[2026-09-01 14:11:47] ERROR - Invalid JSON from Dapodik: Syntax error - snippet: HTTP/1.0 403 Forbidden
+Cache-Control: no-cache
+Date:          Tue, 01 Sep 2026 14:11:47 GMT
+
+{"success":false,"http_code":403,"status_code":"Forbidden","message":"Aplikasi tidak terdaftar pada Web Service Dapodik"}
+[2026-09-01 14:11:48] ERROR - All attempts failed for http://localhost:5774/WebService/getSekolah?token=0aprRpGUmIiyQ6I&npsn=20252031. Tried: http://localhost:5774/WebService/getSekolah, http://localhost:5774/WebService/getSekolah?npsn=20252031, http://localhost:5774/WebService/getSekolah?token=0aprRpGUmIiyQ6I
+[2026-09-01 14:11:50] ERROR - Invalid JSON from Dapodik: Syntax error - snippet: HTTP/1.0 403 Forbidden
+Cache-Control: no-cache
+Date:          Tue, 01 Sep 2026 14:11:50 GMT
+
+{"success":false,"http_code":403,"status_code":"Forbidden","message":"Aplikasi tidak terdaftar pada Web Service Dapodik"}
+[2026-09-01 14:11:51] ERROR - All attempts failed for http://localhost:5774/WebService/getSekolah?token=0aprRpGUmIiyQ6I&npsn=20252031. Tried: http://localhost:5774/WebService/getSekolah, http://localhost:5774/WebService/getSekolah?npsn=20252031, http://localhost:5774/WebService/getSekolah?token=0aprRpGUmIiyQ6I
+[2026-09-01 14:12:23] ERROR - Invalid JSON from Dapodik: Syntax error - snippet: HTTP/1.0 403 Forbidden
+Cache-Control: no-cache
+Date:          Tue, 01 Sep 2026 14:12:23 GMT
+
+{"success":false,"http_code":403,"status_code":"Forbidden","message":"Aplikasi tidak terdaftar pada Web Service Dapodik"}
+[2026-09-01 14:12:24] ERROR - All attempts failed for http://localhost:5774/WebService/getSekolah?token=0aprRpGUmIiyQ6I&npsn=20252031. Tried: http://localhost:5774/WebService/getSekolah, http://localhost:5774/WebService/getSekolah?npsn=20252031, http://localhost:5774/WebService/getSekolah?token=0aprRpGUmIiyQ6I
+[2026-09-01 14:12:26] ERROR - Invalid JSON from Dapodik: Syntax error - snippet: HTTP/1.0 403 Forbidden
+Cache-Control: no-cache
+Date:          Tue, 01 Sep 2026 14:12:26 GMT
+
+{"success":false,"http_code":403,"status_code":"Forbidden","message":"Aplikasi tidak terdaftar pada Web Service Dapodik"}
+[2026-09-01 14:12:27] ERROR - All attempts failed for http://localhost:5774/WebService/getSekolah?token=0aprRpGUmIiyQ6I&npsn=20252031. Tried: http://localhost:5774/WebService/getSekolah, http://localhost:5774/WebService/getSekolah?npsn=20252031, http://localhost:5774/WebService/getSekolah?token=0aprRpGUmIiyQ6I
+[2026-09-01 14:12:58] ERROR - Invalid JSON from Dapodik: Syntax error - snippet: HTTP/1.0 403 Forbidden
+Cache-Control: no-cache
+Date:          Tue, 01 Sep 2026 14:12:58 GMT
+
+{"success":false,"http_code":403,"status_code":"Forbidden","message":"Aplikasi tidak terdaftar pada Web Service Dapodik"}
+[2026-09-01 14:12:58] ERROR - All attempts failed for http://localhost:5774/WebService/getSekolah?token=0aprRpGUmIiyQ6I&npsn=20252031. Tried: http://localhost:5774/WebService/getSekolah, http://localhost:5774/WebService/getSekolah?npsn=20252031, http://localhost:5774/WebService/getSekolah?token=0aprRpGUmIiyQ6I
+[2026-09-01 14:13:01] ERROR - Invalid JSON from Dapodik: Syntax error - snippet: HTTP/1.0 403 Forbidden
+Cache-Control: no-cache
+Date:          Tue, 01 Sep 2026 14:13:01 GMT
+
+{"success":false,"http_code":403,"status_code":"Forbidden","message":"Aplikasi tidak terdaftar pada Web Service Dapodik"}
+[2026-09-01 14:13:02] ERROR - All attempts failed for http://localhost:5774/WebService/getSekolah?token=0aprRpGUmIiyQ6I&npsn=20252031. Tried: http://localhost:5774/WebService/getSekolah, http://localhost:5774/WebService/getSekolah?npsn=20252031, http://localhost:5774/WebService/getSekolah?token=0aprRpGUmIiyQ6I
+[2026-09-01 14:13:10] ERROR - Invalid JSON from Dapodik: Syntax error - snippet: HTTP/1.0 403 Forbidden
+Cache-Control: no-cache
+Date:          Tue, 01 Sep 2026 14:13:10 GMT
+
+{"success":false,"http_code":403,"status_code":"Forbidden","message":"Aplikasi tidak terdaftar pada Web Service Dapodik"}
+[2026-09-01 14:13:11] ERROR - All attempts failed for http://localhost:5774/WebService/getSekolah?token=0aprRpGUmIiyQ6I&npsn=20252031. Tried: http://localhost:5774/WebService/getSekolah, http://localhost:5774/WebService/getSekolah?npsn=20252031, http://localhost:5774/WebService/getSekolah?token=0aprRpGUmIiyQ6I
+[2026-09-01 14:13:12] ERROR - Invalid JSON from Dapodik: Syntax error - snippet: HTTP/1.0 403 Forbidden
+Cache-Control: no-cache
+Date:          Tue, 01 Sep 2026 14:13:12 GMT
+
+{"success":false,"http_code":403,"status_code":"Forbidden","message":"Aplikasi tidak terdaftar pada Web Service Dapodik"}
+[2026-09-01 14:13:13] ERROR - All attempts failed for http://localhost:5774/WebService/getSekolah?token=0aprRpGUmIiyQ6I&npsn=20252031. Tried: http://localhost:5774/WebService/getSekolah, http://localhost:5774/WebService/getSekolah?npsn=20252031, http://localhost:5774/WebService/getSekolah?token=0aprRpGUmIiyQ6I

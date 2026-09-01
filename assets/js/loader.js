@@ -330,52 +330,13 @@ function showConfigResult(success, message) {
   resultDiv.style.display = "block";
 }
 
-// Refresh status koneksi DISABLED - Manual only to prevent Dapodik overload
-// Uncomment below if you really need auto-refresh, tapi maksimal 5 menit interval
-/*
-setInterval(() => {
-  fetch("index.php?action=status")
-    .then((response) => response.json())
-    .then((data) => {
-      // Update status UI jika diperlukan
-      try {
-        if (data && data.dapodik) {
-          const dBadge = document.getElementById("dapodik-status-badge");
-          const dEndpoint = document.getElementById("dapodik-endpoint");
-          if (dBadge) {
-            dBadge.className =
-              "mini-badge " + (data.dapodik.status ? "success" : "error");
-            dBadge.textContent = data.dapodik.status
-              ? "Terhubung"
-              : "Belum siap";
-          }
-          if (dEndpoint && data.dapodik.endpoint)
-            dEndpoint.textContent = data.dapodik.endpoint;
-        }
-        if (data && data.sae) {
-          const sBadge = document.getElementById("sae-status-badge");
-          const sEndpoint = document.getElementById("sae-endpoint");
-          if (sBadge) {
-            sBadge.className =
-              "mini-badge " + (data.sae.status ? "success" : "error");
-            sBadge.textContent = data.sae.status ? "Terhubung" : "Belum siap";
-          }
-          if (sEndpoint && data.sae.endpoint)
-            sEndpoint.textContent = data.sae.endpoint;
+// ============================================================================
+// AUTO-REFRESH EXPLICITLY DISABLED TO PROTECT DAPODIK
+// ============================================================================
+// DO NOT ADD setInterval(), setTimeout(), or any polling code here
+// This is MANUAL MODE ONLY
+// ============================================================================
 
-          // If SAE became disconnected, reload so server-side UI shows config form
-          if (!data.sae.status) {
-            console.warn(
-              "SAE reported disconnected — reloading to show config form",
-            );
-            setTimeout(() => location.reload(), 800);
-          }
-        }
-      } catch (e) {
-        console.log("Status update error:", e);
-      }
-    })
-    .catch((error) => console.log("Status check error:", error));
-}, 30000);
-*/
-
+console.log("%c⚠️ LOADER SAE - MANUAL MODE ONLY", "color:red;font-size:14px;font-weight:bold");
+console.log("Status check: Manual only (refresh page with F5)");
+console.log("Data sync: Manual only (click 'Kirim Semua Data' button)");
