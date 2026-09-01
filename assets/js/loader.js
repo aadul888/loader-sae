@@ -330,7 +330,9 @@ function showConfigResult(success, message) {
   resultDiv.style.display = "block";
 }
 
-// Refresh status koneksi setiap 30 detik
+// Refresh status koneksi DISABLED - Manual only to prevent Dapodik overload
+// Uncomment below if you really need auto-refresh, tapi maksimal 5 menit interval
+/*
 setInterval(() => {
   fetch("index.php?action=status")
     .then((response) => response.json())
@@ -375,3 +377,5 @@ setInterval(() => {
     })
     .catch((error) => console.log("Status check error:", error));
 }, 30000);
+*/
+

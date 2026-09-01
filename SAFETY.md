@@ -5,14 +5,16 @@
 ## 🛡️ Safety Controls Implemented
 
 ### 1. Rate Limiting (Max 2 Requests/Second)
+
 - **Fungsi**: `LoaderSafety::checkRateLimit()`
 - **Mekanisme**: Mencatat timestamp setiap request ke Dapodik, tunggu minimal 500ms antar request
 - **Benefit**: Mencegah request bomb yang overload Dapodik WebService
 - **Cache**: `/loader-sae/cache/ratelimit.txt`
 
 ### 2. Circuit Breaker (Auto Stop on Repeated Errors)
+
 - **Fungsi**: `LoaderSafety::checkCircuitBreaker()` + `recordError()`
-- **Mekanisme**: 
+- **Mekanisme**:
   - Jika 5+ error dalam 5 menit → "open circuit" selama 2 menit
   - Selama circuit open, semua sync request ditolak dengan status 500
   - Setelah 2 menit, circuit reset otomatis
@@ -20,6 +22,7 @@
 - **Status File**: `/loader-sae/cache/circuit_breaker.json`
 
 ### 3. Connection Management
+
 - **Fresh Connections Only**: `CURLOPT_FRESH_CONNECT => true`
   - Setiap request membuat koneksi baru, tidak reuse pool
   - Jadi if crash terjadi, tidak "infect" connection pool
@@ -27,6 +30,7 @@
 - **TCP Keepalive**: Idle 5 detik → close, avoid zombie connections
 
 ### 4. Timeout & Retry
+
 - **Timeout**: 10 detik (connecttimeout 5s, total 10s)
 - **Retry**: Max 2x retry dengan exponential backoff (1s, 2s)
   - HTTP 403/401 (auth error) → NO retry (langsung gagal)
@@ -34,11 +38,13 @@
 - **Benefit**: Jangan let request hang forever
 
 ### 5. Token Expiry Validation
+
 - **Fungsi**: `LoaderSafety::isTokenExpired()`
 - **Mekanisme**: Check `token_expires` di `dynamic_config.json` sebelum sync
 - **Benefit**: Prevent auth loop jika token sudah expired
 
 ### 6. Payload Minimization
+
 - **Fungsi**: `LoaderSafety::minifyPayload()`
 - **Mekanisme**: Strip unnecessary fields dari Dapodik response
 - **Allowed Fields**: `npsn, nama, alamat, kota, propinsi, kode_pos, telepon, website, email, kepala_sekolah, nip_kepala`
@@ -47,18 +53,23 @@
 ## 🔧 How to Use
 
 ### Konfigurasi Rate Limit
+
 Edit di `proses.php` case 'sync':
+
 ```php
 LoaderSafety::checkRateLimit($max_per_second = 2);  // Ubah ke nilai lain jika perlu
 ```
 
 ### Manual Circuit Breaker Reset
+
 ```php
 @unlink(__DIR__ . '/cache/circuit_breaker.json');  // Hapus file ini untuk reset
 ```
 
 ### Test Safe Mode
+
 Buka Loader UI → "Kirim Semua Data" button akan trigger:
+
 1. Rate limit check (tunggu jika needed)
 2. Circuit breaker check (error jika terbuka)
 3. Token expiry check
@@ -67,27 +78,33 @@ Buka Loader UI → "Kirim Semua Data" button akan trigger:
 ## 📊 Monitoring
 
 ### Check Rate Limit Status
+
 File: `/loader-sae/cache/ratelimit.txt`
+
 ```json
 [
-    1693478400.5234,  // timestamp request terakhir
-    1693478399.8234,
-    1693478399.1234
+  1693478400.5234, // timestamp request terakhir
+  1693478399.8234,
+  1693478399.1234
 ]
 ```
 
 ### Check Circuit Breaker Status
+
 File: `/loader-sae/cache/circuit_breaker.json`
+
 ```json
 {
-    "last_error_time": 1693478450,
-    "error_count": 5
+  "last_error_time": 1693478450,
+  "error_count": 5
 }
 ```
+
 - Jika `error_count >= 5` dan `time() - last_error_time < 120`, circuit OPEN
 - Setelah 120 detik, circuit akan close otomatis
 
 ### Logs
+
 - Main: `/loader-sae/logs/loader.log`
 - Sync: `/loader-sae/logs/sync.log`
 - Cek error messages untuk identify masalah
@@ -117,7 +134,7 @@ File: `/loader-sae/cache/circuit_breaker.json`
 ## ✅ Checklist for Safe Deployment
 
 - [x] Rate limiting enabled
-- [x] Circuit breaker enabled  
+- [x] Circuit breaker enabled
 - [x] Fresh connections only (no reuse)
 - [x] Timeout set to 10s max
 - [x] Retry dengan exponential backoff
