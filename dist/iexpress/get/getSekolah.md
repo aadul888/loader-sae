@@ -1,0 +1,33 @@
+{
+    "results": 1,
+    "id": "sekolah_id",
+    "start": 0,
+    "limit": 20,
+    "rows": {
+        "sekolah_id": "c0462e60-0db2-499c-ae9c-6e1c77dadc6a",
+        "nama": "SMK NEGERI 1 PAGELARAN",
+        "nss": "581020714001",
+        "npsn": "20252031",
+        "bentuk_pendidikan_id": 15,
+        "bentuk_pendidikan_id_str": "SMK",
+        "status_sekolah": "1",
+        "status_sekolah_str": "Negeri",
+        "alamat_jalan": "Jl. Raya Pasirpari",
+        "rt": "5",
+        "rw": "2",
+        "kode_wilayah": "020710AI",
+        "kode_pos": "43266",
+        "nomor_telepon": "02632343003",
+        "nomor_fax": null,
+        "email": "smkn01pgl@gmail.com",
+        "website": "smkn1pagelaran.sch.id",
+        "is_sks": false,
+        "lintang": "-7.178400000000",
+        "bujur": "107.135700000000",
+        "dusun": "Pasipari",
+        "desa_kelurahan": "Sindangkerta",
+        "kecamatan": "Kec. Pagelaran",
+        "kabupaten_kota": "Kab. Cianjur",
+        "provinsi": "Prov. Jawa Barat"
+    }
+}

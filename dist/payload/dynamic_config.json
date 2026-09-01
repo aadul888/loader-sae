@@ -1,0 +1,29 @@
+{
+    "dapodik": {
+        "base_url": "http:\/\/localhost:5774",
+        "token": "DkHHuIHMzyMILwN",
+        "npsn": "20252031",
+        "last_token_update": "2026-07-15 12:01:57",
+        "token_expires": "2026-07-16 12:01:57"
+    },
+    "sae": {
+        "base_url": "http:\/\/sae-app.test",
+        "api_url": "http:\/\/sae-app.test\/api\/receive-data",
+        "api_key": "SAE_20260715185826_50b7afd5a51d8ec62d671576e120c0a5",
+        "last_key_update": "2026-07-15 11:58:30",
+        "is_hosting": false
+    },
+    "sync": {
+        "auto_sync": false,
+        "interval": 30,
+        "max_retries": 3,
+        "timeout": 30,
+        "last_successful_sync": null
+    },
+    "system": {
+        "environment": "localhost",
+        "php_version": "8.1.23",
+        "created_at": "2025-11-01 09:26:54",
+        "updated_at": "2026-07-15 12:01:57"
+    }
+}
