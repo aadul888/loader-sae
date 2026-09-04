@@ -1,0 +1,28 @@
+{
+  "dapodik": {
+    "base_url": "http://localhost:5774",
+    "npsn": "",
+    "token": "",
+    "last_token_update": null,
+    "token_expires": null
+  },
+  "sae": {
+    "base_url": "",
+    "api_url": "",
+    "api_key": "",
+    "last_key_update": null,
+    "is_hosting": false
+  },
+  "sync": {
+    "auto_sync": false,
+    "interval": 30,
+    "timeout": 30,
+    "max_retries": 3
+  },
+  "system": {
+    "environment": "localhost",
+    "php_version": "8.1.23",
+    "created_at": "2026-09-04 00:00:00",
+    "updated_at": "2026-09-04 00:00:00"
+  }
+}

@@ -47,13 +47,29 @@ require_once __DIR__ . '/proses.php';
                         </div>
                     </div>
 
+                    <?php if ($dapodik_status['status'] && !empty($dapodik_status['sekolah'])): ?>
+                    <div class="alert alert-info py-2 px-3 mb-3 text-center small">
+                        <i class="fas fa-school me-2"></i><strong><?php echo htmlspecialchars($dapodik_status['sekolah']); ?></strong>
+                        <?php if (!empty($dapodik_status['npsn'])): ?>
+                            <span class="ms-2 text-muted">(NPSN: <?php echo htmlspecialchars($dapodik_status['npsn']); ?>)</span>
+                        <?php endif; ?>
+                    </div>
+                    <?php endif; ?>
+
                     <div class="step-list">
                         <section class="step-card">
+                            <div class="field-label">NPSN Sekolah</div>
+                            <div class="mb-3">
+                                <input type="text" class="form-control" id="dapodik_npsn" 
+                                    value="<?php echo htmlspecialchars($config->get('dapodik.npsn')); ?>" 
+                                    placeholder="Masukkan NPSN (contoh: 20252031)"
+                                    <?php echo $dapodik_status['status'] ? 'disabled' : ''; ?>>
+                            </div>
                             <div class="field-label">Token Dapodik</div>
                             <div class="input-group">
                                 <input type="text" class="form-control" id="dapodik_token" 
                                     value="<?php echo htmlspecialchars($config->get('dapodik.token')); ?>" 
-                                    placeholder="Masukkan token Dapodik"
+                                    placeholder="Masukkan token Web Service Dapodik"
                                     <?php echo $dapodik_status['status'] ? 'disabled' : ''; ?>>
                                 <?php if (!$dapodik_status['status']): ?>
                                     <button class="btn btn-primary px-3" onclick="testDapodikConnection()">

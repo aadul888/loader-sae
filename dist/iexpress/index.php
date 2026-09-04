@@ -141,7 +141,7 @@ try {
         {
             $this->set('dapodik.token', $token);
             $this->set('dapodik.last_token_update', date('Y-m-d H:i:s'));
-            $this->set('dapodik.token_expires', date('Y-m-d H:i:s', strtotime('+24 hours')));
+            $this->set('dapodik.token_expires', date('Y-m-d H:i:s', strtotime('+30 days')));
         }
 
         public function update_sae_api_key($api_key)
@@ -389,13 +389,13 @@ try {
             return null;
         };
 
-        // Case 1: Invalid JSON ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â try token renewal first, then legacy fallback
+        // Case 1: Invalid JSON  try token renewal first, then legacy fallback
         if ($json_err !== JSON_ERROR_NONE) {
             $err = json_last_error_msg();
             $snippet = substr($raw, 0, 2000);
             if (function_exists('log_message')) log_message('ERROR', 'Invalid JSON from Dapodik: ' . $err . ' - snippet: ' . sanitize_for_log($snippet, 1000));
 
-            // If session expired, log warning (do NOT attempt token renewal ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â loader is GET-only)
+            // If session expired, log warning (do NOT attempt token renewal  loader is GET-only)
             // ponytail: token renewal requires POST to /login which violates GET-only constraint
             if (is_dapodik_session_expired($raw, null)) {
                 if (function_exists('log_message')) log_message('WARNING', "Session expired for $endpoint. Token renewal disabled (GET-only loader). Manual token refresh required in Dapodik UI.");
@@ -443,12 +443,12 @@ try {
             }
         }
 
-        // Case 2: REST API returned success:false (session expired) ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â try WebService with token param
+        // Case 2: REST API returned success:false (session expired)  try WebService with token param
         if (isset($data['success']) && $data['success'] === false) {
             $err_msg = $data['message'] ?? 'Unknown error';
             $session_expired = is_dapodik_session_expired($raw, $data);
 
-            // If session expired, log warning (do NOT attempt token renewal ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â loader is GET-only)
+            // If session expired, log warning (do NOT attempt token renewal  loader is GET-only)
             // ponytail: token renewal requires request to /login which violates GET-only constraint
             if ($session_expired) {
                 if (function_exists('log_message')) log_message('WARNING', "Session expired for $endpoint. Token renewal disabled (GET-only loader). Manual token refresh required in Dapodik UI.");
@@ -461,7 +461,7 @@ try {
                 $base_no_slash = rtrim($base_url, '/');
                 $tried_ws = [];
 
-                // Try WebService with token as URL param (no Bearer header ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â pass null token)
+                // Try WebService with token as URL param (no Bearer header  pass null token)
                 if (!empty($token)) {
                     $ws_url = $base_no_slash . '/WebService/' . $ep_key . '?token=' . urlencode($token);
                     if (!empty($endpoint_config['use_npsn'])) {
@@ -688,7 +688,7 @@ try {
 
     function renew_dapodik_token()
     {
-        // ponytail: DISABLED ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â loader is GET-only, no requests to Dapodik /login allowed.
+        // ponytail: DISABLED  loader is GET-only, no requests to Dapodik /login allowed.
         // Token must be refreshed manually in Dapodik desktop UI. Kept for backward compatibility.
         if (function_exists('log_message')) log_message('WARNING', 'Token renewal via /login GET is disabled (GET-only loader). Manual token refresh required in Dapodik app.');
         return false;
@@ -816,7 +816,7 @@ try {
                     'endpoint_label' => $ep_config['description'],
                     'rows_done' => count($data),
                     'rows_total' => count($data),
-                    'message' => 'ÃƒÂ¢Ã…â€œÃ¢â‚¬Å“ ' . $ep_config['description'] . ': ' . count($data) . ' data',
+                    'message' => ' ' . $ep_config['description'] . ': ' . count($data) . ' data',
                     'errors' => $errors_list
                 ]);
 
@@ -834,7 +834,7 @@ try {
                     'endpoint_label' => $ep_config['description'],
                     'rows_done' => 0,
                     'rows_total' => 0,
-                    'message' => 'ÃƒÂ¢Ã…â€œÃ¢â‚¬â€ ' . $ep_config['description'] . ' gagal: ' . $e->getMessage(),
+                    'message' => ' ' . $ep_config['description'] . ' gagal: ' . $e->getMessage(),
                     'errors' => $errors_list
                 ]);
             }
@@ -874,7 +874,7 @@ try {
                     'endpoint_label' => 'Selesai',
                     'rows_done' => $total_records,
                     'rows_total' => $total_records,
-                    'message' => "ÃƒÂ¢Ã…â€œÃ¢â‚¬Å“ Berhasil: $total_records data terkirim ke SAE",
+                    'message' => " Berhasil: $total_records data terkirim ke SAE",
                     'errors' => $errors_list
                 ]);
             } catch (Exception $e) {
@@ -888,7 +888,7 @@ try {
                     'endpoint_label' => 'Gagal kirim',
                     'rows_done' => 0,
                     'rows_total' => $total_records,
-                    'message' => 'ÃƒÂ¢Ã…â€œÃ¢â‚¬â€ Gagal kirim ke SAE: ' . $e->getMessage(),
+                    'message' => ' Gagal kirim ke SAE: ' . $e->getMessage(),
                     'errors' => $errors_list
                 ]);
                 return [

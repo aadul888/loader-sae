@@ -165,13 +165,33 @@ class LoaderSafety {
         }
         
         $config = json_decode(file_get_contents($config_file), true) ?: [];
-        $expires = $config['dapodik']['token_expires'] ?? '';
-        
-        if (!$expires) {
+        $token = $config['dapodik']['token'] ?? '';
+        if (!$token) {
             return true;
         }
+
+        $expires = $config['dapodik']['token_expires'] ?? '';
         
-        return strtotime($expires) <= time();
+        // Token WebService Dapodik bersifat permanen kecuali diset expired secara eksplisit
+        if (!$expires) {
+            return false;
+        }
+        
+        if (strtotime($expires) <= time()) {
+            if (function_exists('check_dapodik_connection')) {
+                $status = check_dapodik_connection();
+                if (!empty($status['status'])) {
+                    if (class_exists('ConfigManager')) {
+                        $cm = new ConfigManager();
+                        $cm->set('dapodik.token_expires', date('Y-m-d H:i:s', strtotime('+30 days')));
+                    }
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        return false;
     }
     
     /**

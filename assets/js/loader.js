@@ -1,4 +1,5 @@
 let syncInProgress = false;
+let syncHasStarted = false;
 let syncInterval = null;
 let progressPoll = null;
 
@@ -34,6 +35,21 @@ function pollProgress() {
     .then((data) => {
       if (!data.success || !data.progress) return;
       const p = data.progress;
+
+      // Ignore stale 'done' or 'error' state from previous run before new run starts
+      if ((p.stage === "done" || p.stage === "error") && !syncHasStarted) {
+        return;
+      }
+
+      if (
+        p.stage === "starting" ||
+        p.stage === "fetching" ||
+        p.stage === "fetched" ||
+        p.stage === "pushing"
+      ) {
+        syncHasStarted = true;
+      }
+
       const progressContainer = document.querySelector(".progress-container");
       const progressBar = document.querySelector(".progress-bar");
       const progressText = document.getElementById("progress-text");
@@ -90,6 +106,7 @@ function pollProgress() {
 
 function clearSyncInProgress() {
   syncInProgress = false;
+  syncHasStarted = false;
   if (progressPoll) {
     clearInterval(progressPoll);
     progressPoll = null;
@@ -131,6 +148,7 @@ function startSync() {
   }
 
   syncInProgress = true;
+  syncHasStarted = false;
   btnSync.disabled = true;
   btnSync.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Mengirim...';
   progressContainer.style.display = "block";
@@ -337,6 +355,9 @@ function showConfigResult(success, message) {
 // This is MANUAL MODE ONLY
 // ============================================================================
 
-console.log("%c⚠️ LOADER SAE - MANUAL MODE ONLY", "color:red;font-size:14px;font-weight:bold");
+console.log(
+  "%c⚠️ LOADER SAE - MANUAL MODE ONLY",
+  "color:red;font-size:14px;font-weight:bold",
+);
 console.log("Status check: Manual only (refresh page with F5)");
 console.log("Data sync: Manual only (click 'Kirim Semua Data' button)");

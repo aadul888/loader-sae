@@ -7,6 +7,9 @@
  * dan mengirimkannya ke aplikasi SAE melalui API endpoint
  */
 
+// Load safety controls
+require_once __DIR__ . '/safety.php';
+
 try {
     // Inlined ConfigManager class (from config_manager.php)
     class ConfigManager
@@ -37,7 +40,7 @@ try {
                 'dapodik' => [
                     'base_url' => 'http://localhost:5774',
                     'token' => '',
-                    'npsn' => '20252031',
+                    'npsn' => '',
                     'last_token_update' => null,
                     'token_expires' => null
                 ],
@@ -141,7 +144,7 @@ try {
         {
             $this->set('dapodik.token', $token);
             $this->set('dapodik.last_token_update', date('Y-m-d H:i:s'));
-            $this->set('dapodik.token_expires', date('Y-m-d H:i:s', strtotime('+24 hours')));
+            $this->set('dapodik.token_expires', date('Y-m-d H:i:s', strtotime('+30 days')));
         }
 
         public function update_sae_api_key($api_key)
@@ -265,42 +268,14 @@ try {
         } catch (Exception $e) {
         }
 
-        $headers = [
-            'Accept: application/json',
-            'User-Agent: Loader-SAE/1.0'
-        ];
-        if (!empty($token)) $headers[] = 'Authorization: Bearer ' . $token;
-
-        $curl = curl_init();
-        $opts = [
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT => $timeout,
-            CURLOPT_CONNECTTIMEOUT => 10,
-            CURLOPT_HTTPHEADER => $headers,
-            CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_SSL_VERIFYHOST => false,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTPGET => true,
-            CURLOPT_POST => false,
-            CURLOPT_CUSTOMREQUEST => 'GET'
-        ];
-        // ponytail: allow extra opts to override defaults (custom headers, timeout)
-        //            NO POST/PUT/DELETE — Dapodik is read-only (GET only)
-        if (is_array($extra_opts) && !empty($extra_opts)) {
-            $opts = array_merge($opts, $extra_opts);
+        // Gunakan safeCurl dari LoaderSafety untuk rate limiting & retry logic
+        $result = LoaderSafety::safeCurl($url, $token ?? '', $timeout, $max_retries = 2);
+        
+        if ($result['success']) {
+            return ['response' => $result['data'], 'http_code' => $result['http_code'], 'error' => '', 'response_time_ms' => 0];
+        } else {
+            return ['response' => null, 'http_code' => $result['http_code'], 'error' => $result['error'], 'response_time_ms' => 0];
         }
-        curl_setopt_array($curl, $opts);
-
-        $start_time = microtime(true);
-        $response = curl_exec($curl);
-        $end_time = microtime(true);
-        $http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        $error = curl_error($curl);
-        $response_time_ms = round(($end_time - $start_time) * 1000, 2);
-        curl_close($curl);
-
-        return ['response' => $response, 'http_code' => $http_code, 'error' => $error, 'response_time_ms' => $response_time_ms];
     }
 
     function dapodik_json_decode($raw, $assoc = true)
@@ -338,15 +313,24 @@ try {
         $config = new ConfigManager();
         $endpoint_config = $dapodik_endpoints[$endpoint];
         $base_url = rtrim($config->get('dapodik.base_url', 'http://localhost:5774'), '/');
-        $npsn = $config->get('dapodik.npsn', '20252031');
+        $npsn = $config->get('dapodik.npsn', '');
+        $token = $config->get('dapodik.token', '');
 
         $path = ltrim($endpoint_config['url'], '/');
         $url = $base_url . '/' . $path;
-        if (!empty($endpoint_config['use_npsn'])) {
-            $url .= (strpos($url, '?') === false ? '?' : '&') . 'npsn=' . urlencode($npsn);
+
+        // WebService Dapodik butuh token & npsn
+        $params = [];
+        if (!empty($token)) {
+            $params['token'] = $token;
+        }
+        if (!empty($npsn)) {
+            $params['npsn'] = $npsn;
         }
 
-        $token = $config->get('dapodik.token', '');
+        if (!empty($params)) {
+            $url .= (strpos($url, '?') === false ? '?' : '&') . http_build_query($params);
+        }
 
         $resp = dapodik_get_raw($url, $token, $config->get('dapodik.timeout', 30));
         if (!empty($resp['error'])) {
@@ -389,13 +373,13 @@ try {
             return null;
         };
 
-        // Case 1: Invalid JSON ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â try token renewal first, then legacy fallback
+        // Case 1: Invalid JSON  try token renewal first, then legacy fallback
         if ($json_err !== JSON_ERROR_NONE) {
             $err = json_last_error_msg();
             $snippet = substr($raw, 0, 2000);
             if (function_exists('log_message')) log_message('ERROR', 'Invalid JSON from Dapodik: ' . $err . ' - snippet: ' . sanitize_for_log($snippet, 1000));
 
-            // If session expired, log warning (do NOT attempt token renewal ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â loader is GET-only)
+            // If session expired, log warning (do NOT attempt token renewal  loader is GET-only)
             // ponytail: token renewal requires POST to /login which violates GET-only constraint
             if (is_dapodik_session_expired($raw, null)) {
                 if (function_exists('log_message')) log_message('WARNING', "Session expired for $endpoint. Token renewal disabled (GET-only loader). Manual token refresh required in Dapodik UI.");
@@ -443,12 +427,12 @@ try {
             }
         }
 
-        // Case 2: REST API returned success:false (session expired) ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â try WebService with token param
+        // Case 2: REST API returned success:false (session expired)  try WebService with token param
         if (isset($data['success']) && $data['success'] === false) {
             $err_msg = $data['message'] ?? 'Unknown error';
             $session_expired = is_dapodik_session_expired($raw, $data);
 
-            // If session expired, log warning (do NOT attempt token renewal ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â loader is GET-only)
+            // If session expired, log warning (do NOT attempt token renewal  loader is GET-only)
             // ponytail: token renewal requires request to /login which violates GET-only constraint
             if ($session_expired) {
                 if (function_exists('log_message')) log_message('WARNING', "Session expired for $endpoint. Token renewal disabled (GET-only loader). Manual token refresh required in Dapodik UI.");
@@ -461,7 +445,7 @@ try {
                 $base_no_slash = rtrim($base_url, '/');
                 $tried_ws = [];
 
-                // Try WebService with token as URL param (no Bearer header ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â pass null token)
+                // Try WebService with token as URL param (no Bearer header  pass null token)
                 if (!empty($token)) {
                     $ws_url = $base_no_slash . '/WebService/' . $ep_key . '?token=' . urlencode($token);
                     if (!empty($endpoint_config['use_npsn'])) {
@@ -666,13 +650,13 @@ try {
     if (!defined('SYNC_TIMEOUT')) define('SYNC_TIMEOUT', 30);
     if (!defined('CONNECT_TIMEOUT')) define('CONNECT_TIMEOUT', 10);
 
-    // REST-style endpoints used by local Dapodik API - adjust if your Dapodik exposes different paths
+    // WebService endpoints used by local Dapodik Web Service API
     $dapodik_endpoints = [
-        'getSekolah' => ['url' => 'rest/Sekolah', 'use_npsn' => true, 'description' => 'Data Sekolah'],
-        'getGtk' => ['url' => 'rest/Ptk', 'use_npsn' => true, 'description' => 'Data GTK (Guru dan Tenaga Kependidikan)'],
-        'getPesertaDidik' => ['url' => 'rest/PesertaDidik', 'use_npsn' => true, 'description' => 'Data Peserta Didik'],
-        'getRombonganBelajar' => ['url' => 'rest/RombonganBelajar', 'use_npsn' => true, 'description' => 'Data Rombongan Belajar'],
-        'getPengguna' => ['url' => 'rest/Pengguna', 'use_npsn' => true, 'description' => 'Data Pengguna Sistem']
+        'getSekolah' => ['url' => 'WebService/getSekolah', 'use_npsn' => true, 'description' => 'Data Sekolah'],
+        'getGtk' => ['url' => 'WebService/getGtk', 'use_npsn' => true, 'description' => 'Data GTK (Guru dan Tenaga Kependidikan)'],
+        'getPesertaDidik' => ['url' => 'WebService/getPesertaDidik', 'use_npsn' => true, 'description' => 'Data Peserta Didik'],
+        'getRombonganBelajar' => ['url' => 'WebService/getRombonganBelajar', 'use_npsn' => true, 'description' => 'Data Rombongan Belajar'],
+        'getPengguna' => ['url' => 'WebService/getPengguna', 'use_npsn' => true, 'description' => 'Data Pengguna Sistem']
     ];
 
     function is_dapodik_session_expired($raw, $data = null)
@@ -688,9 +672,6 @@ try {
 
     function renew_dapodik_token()
     {
-        // ponytail: DISABLED ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â loader is GET-only, no requests to Dapodik /login allowed.
-        // Token must be refreshed manually in Dapodik desktop UI. Kept for backward compatibility.
-        if (function_exists('log_message')) log_message('WARNING', 'Token renewal via /login GET is disabled (GET-only loader). Manual token refresh required in Dapodik app.');
         return false;
     }
 
@@ -706,23 +687,22 @@ try {
             $results = fetch_dapodik_data('getSekolah');
             if (!is_array($results) || empty($results)) return ['status' => false, 'message' => 'Response kosong atau tidak valid. Cek NPSN atau token.'];
             $sekolah = $results[0];
-            return ['status' => true, 'message' => 'Koneksi berhasil', 'sekolah' => $sekolah['nama'] ?? 'N/A'];
+            $nama_sekolah = $sekolah['nama'] ?? 'N/A';
+            $npsn = $sekolah['npsn'] ?? '';
+
+            if (!empty($npsn)) {
+                $config->set('dapodik.npsn', $npsn);
+            }
+
+            return [
+                'status' => true,
+                'message' => 'Koneksi berhasil',
+                'sekolah' => $nama_sekolah,
+                'npsn' => $npsn
+            ];
         } catch (Exception $e) {
             $msg = $e->getMessage();
-            // Clean up raw technical messages for end user
-            if (preg_match('/Invalid JSON/i', $msg)) {
-                return ['status' => false, 'message' => 'Token tidak valid atau server Dapodik tidak merespon. Periksa token dan pastikan Dapodik berjalan.'];
-            }
-            if (preg_match('/HTTP Error: 401/i', $msg)) {
-                return ['status' => false, 'message' => 'Token Dapodik tidak valid. Generate token baru di aplikasi Dapodik.'];
-            }
-            if (preg_match('/HTTP Error/i', $msg)) {
-                return ['status' => false, 'message' => 'Server Dapodik tidak dapat dijangkau. Pastikan Dapodik desktop berjalan.'];
-            }
-            if (preg_match('/cURL Error/i', $msg)) {
-                return ['status' => false, 'message' => 'Gagal terhubung ke server Dapodik. Periksa URL dan koneksi.'];
-            }
-            return ['status' => false, 'message' => $msg];
+            return ['status' => false, 'message' => 'Gagal terhubung ke Dapodik: ' . $msg];
         }
     }
 
@@ -816,7 +796,7 @@ try {
                     'endpoint_label' => $ep_config['description'],
                     'rows_done' => count($data),
                     'rows_total' => count($data),
-                    'message' => 'ÃƒÂ¢Ã…â€œÃ¢â‚¬Å“ ' . $ep_config['description'] . ': ' . count($data) . ' data',
+                    'message' => 'Berhasil: ' . $ep_config['description'] . ' (' . count($data) . ' data)',
                     'errors' => $errors_list
                 ]);
 
@@ -834,7 +814,7 @@ try {
                     'endpoint_label' => $ep_config['description'],
                     'rows_done' => 0,
                     'rows_total' => 0,
-                    'message' => 'ÃƒÂ¢Ã…â€œÃ¢â‚¬â€ ' . $ep_config['description'] . ' gagal: ' . $e->getMessage(),
+                    'message' => ' ' . $ep_config['description'] . ' gagal: ' . $e->getMessage(),
                     'errors' => $errors_list
                 ]);
             }
@@ -874,7 +854,7 @@ try {
                     'endpoint_label' => 'Selesai',
                     'rows_done' => $total_records,
                     'rows_total' => $total_records,
-                    'message' => "ÃƒÂ¢Ã…â€œÃ¢â‚¬Å“ Berhasil: $total_records data terkirim ke SAE",
+                    'message' => "Berhasil: $total_records data terkirim ke SAE",
                     'errors' => $errors_list
                 ]);
             } catch (Exception $e) {
@@ -888,7 +868,7 @@ try {
                     'endpoint_label' => 'Gagal kirim',
                     'rows_done' => 0,
                     'rows_total' => $total_records,
-                    'message' => 'ÃƒÂ¢Ã…â€œÃ¢â‚¬â€ Gagal kirim ke SAE: ' . $e->getMessage(),
+                    'message' => ' Gagal kirim ke SAE: ' . $e->getMessage(),
                     'errors' => $errors_list
                 ]);
                 return [
@@ -1114,15 +1094,55 @@ if (isset($_REQUEST['action'])) {
                 break;
             case 'sync':
                 if ($_SERVER['REQUEST_METHOD'] !== 'POST') throw new Exception('Method tidak diizinkan');
+                
+                // Prevent concurrent sync requests
+                $current_prog = get_sync_progress();
+                if ($current_prog && in_array($current_prog['stage'] ?? '', ['starting', 'fetching', 'pushing'])) {
+                    throw new Exception('Proses kirim data sedang berlangsung. Harap tunggu hingga selesai.');
+                }
+
+                // Immediately initialize sync progress stage to prevent race condition / double-click
+                write_sync_progress([
+                    'stage' => 'starting',
+                    'current_endpoint' => $_POST['endpoint'] ?? 'all',
+                    'total_endpoints' => 5,
+                    'ep_index' => 0,
+                    'endpoint_label' => 'Mempersiapkan',
+                    'rows_done' => 0,
+                    'rows_total' => 0,
+                    'message' => 'Memulai proses kirim data...',
+                    'errors' => []
+                ]);
+                
+                // Safety check 1: Rate limiting
+                LoaderSafety::checkRateLimit($max_per_second = 2);
+                
+                // Safety check 2: Circuit breaker
+                $breaker = LoaderSafety::checkCircuitBreaker();
+                if ($breaker['status'] === 'open') {
+                    throw new Exception($breaker['message']);
+                }
+                
+                // Safety check 3: Token expiry
+                if (LoaderSafety::isTokenExpired(__DIR__ . '/dynamic_config.json')) {
+                    throw new Exception('Token Dapodik sudah expired. Silakan refresh di halaman config.');
+                }
+                
                 $endpoint = $_POST['endpoint'] ?? '';
                 $dry_run = false;
                 if (empty($endpoint)) throw new Exception('Endpoint tidak boleh kosong');
-                if ($endpoint === 'all') {
-                    $result = sync_all_endpoints($dry_run);
-                } else {
-                    $result = sync_endpoint($endpoint, $dry_run);
+                
+                try {
+                    if ($endpoint === 'all') {
+                        $result = sync_all_endpoints($dry_run);
+                    } else {
+                        $result = sync_endpoint($endpoint, $dry_run);
+                    }
+                    echo json_encode($result);
+                } catch (Exception $e) {
+                    LoaderSafety::recordError();
+                    throw $e;
                 }
-                echo json_encode($result);
                 break;
             case 'sync_progress':
                 $prog = get_sync_progress();
@@ -1142,10 +1162,13 @@ if (isset($_REQUEST['action'])) {
                 break;
             case 'test_dapodik':
                 $token = $_POST['token'] ?? '';
+                $npsn = $_POST['npsn'] ?? '';
                 if (empty($token)) throw new Exception('Token tidak boleh kosong');
+                if (empty($npsn)) throw new Exception('NPSN tidak boleh kosong');
                 $config->update_dapodik_token($token);
+                $config->set('dapodik.npsn', $npsn);
                 $result = check_dapodik_connection();
-                echo json_encode(['success' => $result['status'], 'message' => $result['message'], 'status' => $result]);
+                echo json_encode(['success' => $result['status'], 'message' => $result['message'], 'status' => $result, 'sekolah' => $result['sekolah'] ?? '', 'npsn' => $result['npsn'] ?? '']);
                 break;
             case 'test_sae':
                 $api_key = $_POST['api_key'] ?? '';
