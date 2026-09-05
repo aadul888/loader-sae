@@ -1,0 +1,8 @@
+# Logs & Cache
+logs/*.log
+cache/*
+sync_progress.json
+
+# Installer build artifacts
+dist/payload/
+dist/iexpress/
